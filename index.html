@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bisdev Digital Sugar Cube</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--blue:#037EF3;--ink:#0A2540;--bg:#F0F7FF;--card:#fff;--gold:#FFD166;--green:#10B981;--muted:#4a6482;--line:#d6e8fc;--shadow:rgba(3,126,243,.18);
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--ink:#E8F1FC;--bg:#071526;--card:#0E2540;--muted:#9db6d3;--line:#1b3b61;--shadow:rgba(0,0,0,.4)}}
+:root[data-theme="dark"]{--ink:#E8F1FC;--bg:#071526;--card:#0E2540;--muted:#9db6d3;--line:#1b3b61;--shadow:rgba(0,0,0,.4)}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;min-height:100vh;background:var(--bg);color:var(--ink);font-family:'Plus Jakarta Sans','Poppins',system-ui,sans-serif;display:flex;align-items:center;justify-content:center;padding:20px;overflow-x:hidden}
+.deco{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}
+.deco span{position:absolute;font-size:28px;opacity:.35;animation:bob 6s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-14px) rotate(8deg)}}
+main{position:relative;z-index:1;width:100%;max-width:560px}
+.card{background:var(--card);border:2px solid var(--line);border-radius:28px;padding:32px 26px;box-shadow:0 14px 40px var(--shadow);text-align:center}
+.card.in{animation:pop .45s cubic-bezier(.2,1.3,.4,1)}
+@keyframes pop{from{opacity:0;transform:scale(.92) translateY(12px)}}
+.cube{font-size:44px;line-height:1;margin-bottom:8px}
+h1{margin:0 0 10px;font-size:clamp(24px,6vw,31px);font-weight:800;color:var(--blue);line-height:1.2}
+.sub{margin:0 0 22px;color:var(--muted);line-height:1.6;font-size:15px}
+input{width:100%;padding:15px 18px;font:inherit;font-size:17px;font-weight:700;letter-spacing:.06em;text-align:center;color:var(--ink);background:var(--bg);border:2px solid var(--line);border-radius:16px;outline:none}
+input:focus-visible{border-color:var(--blue);box-shadow:0 0 0 4px rgba(3,126,243,.2)}
+button{font:inherit;cursor:pointer}
+.go{margin-top:14px;width:100%;padding:15px;border:0;border-radius:16px;background:var(--blue);color:#fff;font-weight:800;font-size:16px;box-shadow:0 5px 0 #0262bd;transition:transform .1s,box-shadow .1s}
+.go:active{transform:translateY(4px);box-shadow:0 1px 0 #0262bd}
+.go:focus-visible,.back:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+.err{min-height:22px;margin:12px 0 0;color:#e0484f;font-weight:700;font-size:14px}
+.shake{animation:shake .4s}
+@keyframes shake{25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+.badge{display:inline-block;background:var(--gold);color:#0A2540;font-weight:800;font-size:14px;padding:9px 16px;border-radius:999px;margin-bottom:20px}
+.letter{text-align:left;font-size:15.5px;line-height:1.8;margin:0;padding:18px 18px 18px 20px;border-left:5px solid var(--green);background:var(--bg);border-radius:6px 16px 16px 6px}
+.back{margin-top:22px;background:none;border:2px solid var(--line);color:var(--blue);font-weight:700;padding:10px 18px;border-radius:999px}
+.back:hover{background:var(--bg)}
+.hidden{display:none}
+.fall{position:fixed;top:-40px;z-index:5;pointer-events:none;font-size:26px;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(360deg);opacity:.9}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+<div class="deco" id="deco"></div>
+<main>
+  <section class="card in" id="home">
+    <div class="cube">🪙</div>
+    <h1>Bisdev Digital Sugar Cube 💸✨</h1>
+    <p class="sub">A little appreciation note for our favorite Gepian Babies — enter your secret code to unlock your message!</p>
+    <input id="code" placeholder="BD-XXXXX" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Secret code">
+    <button class="go" id="open">Open My Sugar Cube 🪙</button>
+    <p class="err" id="err" role="alert"></p>
+  </section>
+  <section class="card hidden" id="reveal">
+    <div class="badge" id="badge"></div>
+    <p class="letter" id="msg"></p>
+    <button class="back" id="back">← Enter Another Code</button>
+  </section>
+</main>
+<script>
+const D={
+"BD-ABH82":["Abhay", "Hey Abhay, thank you so much for putting so much heart and energy into Bisdev during your internship with us. Honestly, we know how tough this journey can get—and if you ever felt like you hadn’t given your 100% yet, kept getting rejected, or haven’t closed a partner yet, please know that’s completely okay. What really stuck with us was your grit and how you kept showing up anyway, even on the heavy days. We see so much potential in you, and we’re super grateful you chose Bisdev as your home to grow in AIESEC. Keep trusting yourself, because your best wins are still ahead. Good luck with everything next, and see you around! We believe in you, and titip Surabaya ya, Abhay."],
+"BD-IRN19":["Irene", "Hey Irene, from day one, your quiet strength and thoughtfulness meant so much to Bisdev. Let’s be real, BD isn’t always easy—so if you haven’t landed a partner yet, got ghosted by companies, or felt like you could’ve done more, don’t be too hard on yourself, okay? Through every setback, we saw your grit, your patience, and how much you genuinely cared about doing things right. You have so much potential waiting to shine. Thank you for choosing us for your AIESEC internship and trusting us with your growth. Keep your head up and go chase great things. Wishing you the best of luck, and see you soon! We believe in you, and titip Surabaya ya, Irene."],
+"BD-ISM47":["Isma", "Hey Isma, we just want to say how much we appreciate all the effort, patience, and sincerity you brought into Bisdev. It’s totally okay if this term felt overwhelming at times, if those rejections stung, or if you feel like you haven’t reached your peak yet—being in BD was never just about the numbers. We saw your grit in how you kept trying and stayed kind even when things got stressful, and we see so much potential in you. Thank you for choosing Bisdev as your place to learn and make memories in AIESEC; having you around really made us stronger. Never stop believing in how far you can go. Wishing you endless luck ahead, and see you! We believe in you, and titip Surabaya ya, Isma."],
+"BD-BEN63":["Benn", "Hey Benn, the way you were always ready to jump in and back up the team never went unnoticed—thank you for everything you gave to Bisdev. We know BD comes with a lot of rejection and moments where you feel like you haven’t hit your stride yet, and honestly, that’s completely fine. Even when partners didn’t say yes right away, we saw your grit, your eagerness to learn, and the real potential you have to become a great leader. We’re so thankful you chose us and spent your AIESEC internship journey with this team. Keep carrying that courage wherever you go next. Best of luck with everything ahead, and see you soon! We believe in you, and titip Surabaya ya, Benn."],
+"BD-SER91":["Sera", "Hey Sera, thank you for bringing such genuine warmth and good energy into Bisdev every single day. Please remember that it’s completely okay if things felt hard, if rejections got discouraging, or if you feel like you haven’t shown your full potential yet. What stood out to us wasn’t being perfect—it was your grit, your kindness, and all the amazing potential we see in who you’re becoming. Having you choose Bisdev for your AIESEC internship was truly a gift to us, and we hope you know how much you’re appreciated. Keep shining in your own way wherever life takes you next. Good luck with everything, and see you! We believe in you, and titip Surabaya ya, Sera."],
+"BD-KES28":["Kesya", "Hey Kesya, seeing how passionately you showed up and cared for Bisdev has honestly been one of the best parts of this term. We know it wasn’t always smooth sailing—so if there were days you felt stuck, dealt with tough rejections, or wished you could’ve given even more, please be gentle with yourself because it’s okay. We saw your grit every time you bounced back, and we see such bright, unstoppable potential in you. Thank you so much for choosing Bisdev as your internship home in AIESEC and trusting us along the way. Keep bringing that same fire and heart into whatever you do next. Wishing you all the luck, and see you around! We believe in you, and titip Surabaya ya, Kesya."],
+"BD-LAT54":["Latifa", "Hey Latifa, your quiet determination and dedication really left a mark on Bisdev. We know how frustrating it can feel when all your effort hasn’t turned into a closed partner yet or when rejections make you second-guess yourself—and it’s okay if you feel like this was just a small glimpse of what you can actually do. We saw your grit behind the scenes, how you never walked away when things got tough, and the huge potential inside you. Thank you for choosing us as your place to intern and grow in AIESEC. Be proud of yourself, because your effort mattered way more than you think. Good luck on everything ahead, and see you! We believe in you, and titip Surabaya ya, Latifa."],
+"BD-CHR36":["Christine", "Hey Christine, thank you for bringing so much heart, sharpness, and commitment into Bisdev throughout this whole journey. We know BD can really test your patience with endless rejections and moments where you feel like you haven’t maxed things out yet—and we just want to remind you that’s totally okay. Through every rough day, we saw your grit, how you kept pushing forward, and the massive potential you have to do big things. We’re so grateful you chose Bisdev as your AIESEC internship home; growing alongside you has been the best experience. Keep trusting your gut and aiming high. Wishing you the absolute best of luck, and see you soon! We believe in you, and titip Surabaya ya, Christine."],
+"BD-KEV70":["Kevin", "Hey Kevin, we really appreciate all the effort, energy, and good vibes you brought to Bisdev during your internship with us. Even if closing a partner felt out of reach sometimes, rejections piled up, or you felt like you hadn’t unlocked your full potential yet, please know that’s completely okay. We saw your grit in how you stayed present, kept trying, and kept the team’s mood alive when things got hectic—and we see so much potential in you just waiting to take off. Thank you for choosing us to be part of your AIESEC story. Keep betting on yourself and stepping up with confidence. Wishing you huge success ahead, and see you! We believe in you, and titip Surabaya ya, Kevin."],
+"BD-ZOR15":["Zora", "Hey Zora, your spirit and authenticity made Bisdev feel way less like a department and way more like a real family. We know this term had its steep climbs, and it’s completely okay if you haven’t landed a partner yet, faced tough rejections, or felt like you still had more inside you to give. What we loved most was your grit—the way you kept showing up with heart even when nothing was guaranteed—and the undeniable potential we see in you. Thank you so much for choosing Bisdev for your AIESEC internship and letting us be part of your growth. Never lose that spark of yours. Best of luck with everything coming your way, and see you! We believe in you, and titip Surabaya ya, Zora."],
+"BD-WNG89":["Wangs", "Hey Wangs, thank you for showing up with so much grit, humor, and genuine heart throughout your time in Bisdev. Let’s be honest, the BD grind isn’t easy—so it’s totally okay if things felt exhausting, if rejections got annoying, or if you feel like you haven’t hit your maximum yet. Looking at how you kept pushing through anyway, we saw real resilience in you, and we see huge potential in whatever you decide to build next. We’re so grateful you chose us as your internship home in AIESEC; having you around made every stressful day feel so much lighter. Keep chasing big goals without holding back. Wishing you endless luck, and see you soon! We believe in you, and titip Surabaya ya, Wangs."],
+"BD-TSQ42":["Tsaqib", "Hey Tsaqib, from the way you stepped up to the steady effort you put in every week, we truly appreciated having you in Bisdev. It’s okay if the process felt tough, if rejections came way more often than yeses, or if you feel like you’re still unlocking your full potential. What mattered most to us was seeing your grit, your discipline, and the raw potential you have to grow into someone really impactful. Thank you for working so hard and choosing Bisdev as the place to start your AIESEC internship journey. Keep staying hungry to learn and brave enough to lead. Good luck on your next chapter, and see you around! We believe in you, and titip Surabaya ya, Tsaqib."],
+"BD-ALD67":["Alden", "Hey Alden, we want to thank you sincerely for all the hard work, focus, and reliability you brought into Bisdev. Please never feel discouraged if there were times you hadn’t landed a partner yet, hit walls of rejection, or felt like you could’ve pushed even further—that’s completely okay, because real growth takes time. We saw your grit in how consistently you showed up for the team, and we see genuine, solid potential in you that’s going to take you way beyond this room. Thank you for choosing us to be your home during your AIESEC internship. Keep building on every lesson you picked up here. Wishing you the best of luck ahead, and see you! We believe in you, and titip Surabaya ya, Alden."],
+"BD-AKM93":["Akmal", "Hey Akmal, thank you for your quiet dedication, resilience, and all the genuine effort you poured into Bisdev during your internship. We know BD can feel pretty intimidating, and it’s completely okay if you faced rejections, haven’t closed a partner yet, or feel like you haven’t reached your peak yet. What stood out to us was your grit—staying committed even when things weren’t easy—and the quiet, strong potential we see growing inside you. We’re really grateful you chose Bisdev as your place to experience AIESEC and grow alongside us. Keep moving forward with confidence and purpose. Wishing you nothing but good luck ahead, and see you! We believe in you, and titip Surabaya ya, Akmal."],
+"BD-SAM21":["Samuel", "Hey Samuel, your enthusiasm, sincerity, and readiness to give your best made such a real impact on Bisdev. We know chasing partners and dealing with constant rejections can get tiring, and it’s completely okay if you feel like you haven’t reached your maximum yet. Through every up and down, we saw your grit, how you learned from every stumble, and the bright potential you carry with you. Thank you for every hour of hard work and for choosing us to be part of your AIESEC internship journey. Keep that momentum going as you chase bigger dreams. Best of luck with everything ahead, and see you soon! We believe in you, and titip Surabaya ya, Samuel."],
+"BD-RAF58":["Rafa", "Hey Rafa, thank you for always bringing heart, dedication, and an all-in attitude to Bisdev. Whether things were chill or chaotic, you stood with the team—and if there were moments you felt like you hadn’t maximized everything yet, hadn’t secured a partner, or felt drained by rejections, please know that’s totally okay. We saw your grit in how you kept showing up anyway, and we see tremendous potential in your energy and drive. We’re so thankful you chose Bisdev as your internship home in AIESEC and trusted us with this chapter. Keep shining bright and moving at your own pace. Wishing you all the luck ahead, and see you! We believe in you, and titip Surabaya ya, Rafa."],
+"BD-ATH34":["Athal", "Hey Athal, we’re so grateful for the sincerity, hard work, and steady support you gave to Bisdev throughout your internship. It’s completely okay if the journey felt tough at times, if rejections tested your confidence, or if you feel like you still have so much untapped potential left to show. What meant the most to us was seeing your grit—watching you stay committed and step out of your comfort zone—and knowing how much potential lives inside you. Thank you for choosing us as the place to grow and learn inside AIESEC. Keep taking on every challenge with that same gentle courage. Wishing you the best of luck, and see you around! We believe in you, and titip Surabaya ya, Athal."],
+"BD-ADT76":["Adit", "Hey Adit, thank you for bringing your energy, hard work, and loyalty into Bisdev right from the start. We know the road in BD isn’t always kind—so if you faced tough rejections, haven’t closed that partner yet, or felt like you hadn’t hit your full stride, please know that’s completely okay. We saw your grit every time you stood back up for the team, and we see real, undeniable potential in what you’re capable of achieving next. We’re truly thankful you chose Bisdev for your AIESEC internship; having you here made the whole experience unforgettable. Keep pushing forward with heart and confidence. Good luck ahead, and see you! We believe in you, and titip Surabaya ya, Adit."],
+"BD-OGK12":["Ogek", "Hey Ogek, thank you so much for your hard work, warmth, and genuine commitment throughout your time in Bisdev. Even on days when things felt overwhelming, rejections stung, or you felt like you hadn’t reached your maximum potential yet, please remember that it’s completely okay. What we loved most was seeing your grit, how you never gave up on the team, and the bright, authentic potential we see in you. We’re beyond grateful you chose us as your internship home in AIESEC and shared this journey with us. Keep being unapologetically yourself and chasing big things with courage. Wishing you the very best of luck ahead, and see you soon! We believe in you, and titip Surabaya ya, Ogek."]
+};
+const $=id=>document.getElementById(id),home=$('home'),rev=$('reveal'),inp=$('code'),err=$('err');
+const icons=['🪙','💰','💸','✨','📈'];
+$('deco').innerHTML=Array.from({length:12},(_,i)=>`<span style="left:${(i*37+8)%94}%;top:${(i*53+6)%90}%;animation-delay:${i*.5}s">${icons[i%5]}</span>`).join('');
+function show(el){[home,rev].forEach(s=>s.classList.add('hidden'));el.classList.remove('hidden');el.classList.remove('in');void el.offsetWidth;el.classList.add('in')}
+function confetti(){for(let i=0;i<26;i++){const s=document.createElement('span');s.className='fall';s.textContent=icons[i%5];s.style.left=Math.random()*100+'vw';s.style.animationDuration=(2.5+Math.random()*2.5)+'s';s.style.animationDelay=Math.random()*.8+'s';document.body.appendChild(s);setTimeout(()=>s.remove(),6500)}}
+function unlock(){
+  const k=inp.value.trim().toUpperCase(),e=D[k];
+  if(!e){err.textContent='Oops! Invalid code. Double-check your secret code and try again 💸';home.classList.remove('shake');void home.offsetWidth;home.classList.add('shake');return}
+  err.textContent='';
+  $('badge').textContent='To: '+e[0]+' | Bisdev Intern 💼✨';
+  $('msg').textContent=e[1];
+  show(rev);window.scrollTo(0,0);confetti();
+}
+$('open').onclick=unlock;
+inp.addEventListener('keydown',e=>{if(e.key==='Enter')unlock()});
+$('back').onclick=()=>{inp.value='';err.textContent='';show(home);inp.focus()};
+</script>
+</body>
+</html>
